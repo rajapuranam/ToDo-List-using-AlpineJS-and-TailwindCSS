@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>To Do List - using AlpineJS and Tailwind CSS</title>
+    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/1.2.0/tailwind.min.css'>
+    <script src='https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.js'></script>
+
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" />
+</head>
+
+<body class="antialiased w-screen h-screen bg-white pt-8">
+    <div x-data="toDoList()" class="max-w-2xl mx-auto px-12 py-8 rounded-lg shadow-lg bg-teal-200">
+        <div class="flex flex-col items-center justify-center mb-8">
+            <h1 class="text-3xl font-bold uppercase">
+                to do list
+            </h1>
+            <h5 class="text-lg mt-2 mb-8 font-mono">
+                Add Main tasks and Sub tasks...
+            </h5>
+            <div class="flex lg:w-2/3 w-full sm:flex-row flex-col mx-auto px-8 sm:px-0">
+                <input type="text" x-model="newTodo" placeholder="Main task..."
+                    class="flex-grow w-full bg-gray-100 rounded border border-gray-400 focus:outline-none focus:border-indigo-500 text-base px-4 py-2 mr-4 mb-4 sm:mb-0"
+                    @keydown.enter="addMainTask">
+                <button
+                    class="text-white bg-teal-500 border-0 py-2 px-6 focus:outline-none hover:bg-indigo-600 rounded text-lg"
+                    @click="addMainTask">Add</button>
+            </div>
+        </div>
+
+        <div class="bg-white w-full rounded shadow mb-8 font-serif">
+            <template x-for="(tasks, ind) in todoaccordian" :key="ind">
+                <div class="px-4 text-gray-800" :class="{'pb-4': checkEmpty(ind)}">
+                    <div class="w-full font-bold border-b border-gray-400 py-3 flex justify-between items-center"
+                        @click="tasks.isOpen = !tasks.isOpen">
+                        <div x-text="tasks.mainTask"></div>
+                        <div>
+                            <div x-show="!tasks.isOpen" class="mr-4 text-2xl text-red-600 inline-block cursor-pointer">
+                                <i class="fas fa-sort-down"></i>
+                            </div>
+                            <div x-show="tasks.isOpen" class="mr-4 text-2xl text-red-600 inline-block cursor-pointer">
+                                <i class="fas fa-caret-up"></i>
+                            </div>
+                            <div class="bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700 inline-block cursor-pointer"
+                                @click="deleteMainTask(ind)">
+                                &cross;
+                            </div>
+                        </div>
+                    </div>
+
+                    <div x-show="tasks.isOpen" class="text-center my-4 mb-4">
+                        <input type="text" x-model="tasks.newSubTodo" placeholder="Add sub task..."
+                            class="w-64 bg-gray-100 rounded border border-gray-400 focus:outline-none focus:border-indigo-500 text-base px-4 py-2 mr-4 mb-4 sm:mb-0"
+                            @keydown.enter="addSubTask(ind)">
+                    </div>
+
+                    <template x-for="(todo, index) in tasks.subTask" :key="index">
+                        <div class="text-gray-900 mt-2 ml-8" x-show="tasks.isOpen">
+                            <input type="checkbox" @change="toggleSubTaskCompleted(ind, index)"
+                                :checked="todo.completed" class="inline-block mr-4">
+                            <p x-text="todo.todo" class="inline-block" :class="{ 'line-through': todo.completed, 'mb-4': checkLast(ind, index) }"></p>
+                        </div>
+                    </template>
+                </div>
+            </template>
+        </div>
+
+    </div>
+   <script src="./app.js"></script>
+
+</body>
+
+</html>
